@@ -17,7 +17,7 @@
  <p style="text-align: center;">
   <span style="color: #333333;">
   Sobre | 
-  Autores | 
+  <a id="linkAutores" href="autores.html?lang=pt">Autores</a>
   <a id="linkIniciar" href="tcle.html?lang=pt">Iniciar</a>
   </span>
  </p>
@@ -25,9 +25,11 @@
  
 <script>
   function setEnglish() {
-    let a = "";
     document.getElementById("linkIniciar").text = "Start";
     document.getElementById("linkIniciar").href = "tcle.html?lang=en";
+    
+    document.getElementById("linkAutores").text = "Authors";
+    document.getElementById("linkIniciar").href = "auores.html?lang=pt";
   }
 </script>
  
