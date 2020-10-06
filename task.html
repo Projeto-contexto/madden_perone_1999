@@ -49,7 +49,7 @@
 
   
  <div class="myDiv">
-  <button id="btnChange" onclick="changeSchedule()" style="font-size:30px"><i class="fa fa-arrow-left"></i>
+  <button id="changeSchedule" onclick="changeSchedule()" style="font-size:30px"><i class="fa fa-arrow-left"></i>
   </button>aaa
 </div>
 
@@ -65,6 +65,7 @@
 
 <script>
  function changeSchedule() {
-  alert("<i class="fa fa-arrow-right">");
+  alert("aa");
+  document.getElementById("changeSchedule").text = "<i class="fa fa-arrow-right">";
  }
 </script>
