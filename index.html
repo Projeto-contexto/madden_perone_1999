@@ -4,6 +4,11 @@
 <title>Projeto contexto</title>
 </head>
 <body>
+<pp style="text-align: center;">
+  <button type="button" onclick="setEnglish()">English</button> 
+  <button type="button">Espanhol</button> 
+  <button type="button">Português</button>
+ </p>
  <br>
  <br>
  <br>
@@ -11,16 +16,21 @@
  <h1 style="text-align: center;"><span style="color: #333333;">Projeto Contexto</span></h1>
  <p style="text-align: center;">
   <span style="color: #333333;">
-  Sobre | Autores | <a href="tcle.html?lang=pt">Iniciar</a>
+  Sobre | 
+  Autores | 
+  <a id="linkIniciar" href="tcle.html?lang=pt">Iniciar</a>
   </span>
  </p>
- <p>
-  <button type="button" onclick="setInglish">Inglish</button> <button type="button">Espanhol</button> <button type="button">Português</button>
- </p>
+
+ 
+<script>
+  function setEnglish() {
+    let a = "";
+    document.getElementById("linkIniciar").text = "Start";
+    document.getElementById("linkIniciar").href = "tcle.html?lang=en";
+  }
+</script>
+ 
 </body>
 </html>
-<script>
- function setInglish() {
-  alert("in");
- }
-</script>
+
