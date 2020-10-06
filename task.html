@@ -75,17 +75,22 @@
 let esq1_rico = 0;
 let esq2_rico = 0;
 
-let esq1_rico_intervalos = [23, 3, 8, 20];
+let esq1_rico_intervalos = [5, 3, 5, 2];
 let esq1_rico_list_index = 0;
 
-setTimeout(function(){ esq1RicoSetNextInt(); }, 1000);
+let esq1_rico_reforco_disponivel = false;
+
+setTimeout(function(){ esq1RicoSetNextInt(); }, esq1_rico_intervalos[esq1_rico_list_index] * 1000);
 
 function esq1RicoSetNextInt() {
 	//alert(esq1_rico_intervalos[esq1_rico_list_index]);
   document.getElementById("btnChangeSchedule").innerHTML = esq1_rico_intervalos[esq1_rico_list_index];
   
-  if (esq1_rico_list_index <= 3) {
-  	setTimeout(function(){ esq1RicoSetNextInt(); }, 1000);
+  esq1_rico_reforco_disponivel = true;
+  
+  if (esq1_rico_list_index < 3) {
+  	//let intervalo = esq1_rico_intervalos[esq1_rico_list_index] * 1000;
+  	//setTimeout(function(){ esq1RicoSetNextInt(); }, intervalo);
   } else {
   	alert("Fim do jogo");
   }
@@ -103,7 +108,11 @@ function esq1RicoSetNextInt() {
  
  function esq1Rico() {
  	esq1_rico = esq1_rico + 1;
- 	alert(esq1_rico);
+  
+  if (esq1_rico_reforco_disponivel === true) {
+  	alert("ref dispo");
+  }
+ 
  }
  
  function esq2Rico() {
