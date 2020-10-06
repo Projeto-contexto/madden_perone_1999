@@ -55,17 +55,59 @@
 
  <div class= "screen">
   <div class= "left">
+    <br>
+    <br>
+    <br>
+    <button id="btnEsq1Rico" onclick="esq1Rico()"> O </button>
   </div>
   
   <div class= "rigth">
+    <br>
+    <br>
+     <br>
+    <button id="btnEsq2Rico" onclick="esq2Rico()"> P </button>
   </div>
 </div>
 </body>
 </html>
 
 <script>
+let esq1_rico = 0;
+let esq2_rico = 0;
+
+let esq1_rico_intervalos = [23, 3, 8, 20];
+let esq1_rico_list_index = 0;
+
+setTimeout(function(){ esq1RicoSetNextInt(); }, 1000);
+
+function esq1RicoSetNextInt() {
+	//alert(esq1_rico_intervalos[esq1_rico_list_index]);
+  document.getElementById("btnChangeSchedule").innerHTML = esq1_rico_intervalos[esq1_rico_list_index];
+  
+  if (esq1_rico_list_index <= 3) {
+  	setTimeout(function(){ esq1RicoSetNextInt(); }, 1000);
+  } else {
+  	alert("Fim do jogo");
+  }
+  
+  esq1_rico_list_index = esq1_rico_list_index + 1;
+	
+}
+
  function changeSchedule() {
-  document.getElementById("btnChangeSchedule").innerHTML = '<-';
-  alert("a11a222");
+  document.getElementById("btnChangeSchedule").innerHTML = '<';
+  document.getElementById("btnEsq2Rico").disabled = true;
+ }
+ 
+ //setInterval(function(){ alert("Hello"); }, 3000);
+ 
+ function esq1Rico() {
+ 	esq1_rico = esq1_rico + 1;
+ 	alert(esq1_rico);
+ }
+ 
+ function esq2Rico() {
+ 	esq2_rico = esq2_rico + 1;
+ 	alert(esq2_rico);
  }
 </script>
