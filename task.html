@@ -68,7 +68,7 @@
   <button id="btnConsumirReforco" onclick="consumirReforco()" disabled> Pegue o ponto aqui </button>
 </div>
 
- <div class= "screen">
+ <div id="divLeft" class= "screen">
   <div class= "left">
     <br>
     <br>
@@ -147,6 +147,7 @@ function esq1RicoSetNextInt() {
   
   if (esq1_rico_list_index < 30) {
   	esq1_rico_reforco_disponivel = true;
+   
   } else {
   	alert("Fim do jogo");
   }
@@ -166,7 +167,8 @@ function esq1RicoSetNextInt() {
  	esq1_rico = esq1_rico + 1;
   
   if (esq1_rico_reforco_disponivel === true) {
-  	alert("ref dispo");
+    document.getElementById("btnConsumirReforco").disabled = false;
+    document.getElementById("divLeft").style.display = 'none'; 
   }
  
  }
@@ -179,6 +181,8 @@ function esq1RicoSetNextInt() {
  function consumirReforco() {
  	alert(esq1_rico_reforco_disponivel);
   esq1_rico_reforco_disponivel = false;
+  document.getElementById("btnConsumirReforco").disabled = true;
+  document.getElementById("divLeft").style.display = 'block'; 
     // indice da lista do esquema => Math
     //Math.floor((Math.random() * MAX) + INI)
     // index aleatoria variando de 0 ao tamanho máximo autal matrix
