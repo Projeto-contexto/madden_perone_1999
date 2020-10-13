@@ -59,6 +59,13 @@
  <div class="myDiv">
   <button id="btnChangeSchedule" onclick="changeSchedule()"> ->
   </button>
+  <div id="divVars">
+    Esquema 1: <input type="text" id="inpEsq1" value="0"><br>
+    Esquema 2: ?<br>
+    Esquema 3: ?<br>
+    Esquema 4: ?<br>
+  </div>
+  <button id="btnConsumirReforco" onclick="consumirReforco()" disabled> Pegue o ponto aqui </button>
 </div>
 
  <div class= "screen">
@@ -83,7 +90,7 @@
 let esq1_rico = 0;
 let esq2_rico = 0;
 
-let esq1_rico_intervalos = [5, 3, 5, 2];
+let esq1_rico_intervalos = [5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2, 5, 3, 5, 2];
 let esq1_rico_list_index = 0;
 
 let esq1_rico_reforco_disponivel = false;
@@ -125,7 +132,6 @@ function mover() {
   }
 
 
- 
  document.getElementById("btnEsq1Rico").style.left = esq1_rico_left + "px";
  document.getElementById("btnEsq1Rico").style.top = esq1_rico_top + "px";
 
@@ -136,18 +142,16 @@ setTimeout(function(){ esq1RicoSetNextInt(); }, esq1_rico_intervalos[esq1_rico_l
 
 function esq1RicoSetNextInt() {
 	//alert(esq1_rico_intervalos[esq1_rico_list_index]);
-  document.getElementById("btnChangeSchedule").innerHTML = esq1_rico_intervalos[esq1_rico_list_index];
+  document.getElementById("inpEsq1").value = esq1_rico_intervalos[esq1_rico_list_index];
   
-  esq1_rico_reforco_disponivel = true;
   
-  if (esq1_rico_list_index < 3) {
-  	//let intervalo = esq1_rico_intervalos[esq1_rico_list_index] * 1000;
-  	//setTimeout(function(){ esq1RicoSetNextInt(); }, intervalo);
+  if (esq1_rico_list_index < 30) {
+  	esq1_rico_reforco_disponivel = true;
   } else {
   	alert("Fim do jogo");
   }
   
-  esq1_rico_list_index = esq1_rico_list_index + 1;
+  
 	
 }
 
@@ -170,5 +174,19 @@ function esq1RicoSetNextInt() {
  function esq2Rico() {
  	esq2_rico = esq2_rico + 1;
  	alert(esq2_rico);
+ }
+ 
+ function consumirReforco() {
+ 	alert(esq1_rico_reforco_disponivel);
+  esq1_rico_reforco_disponivel = false;
+    // indice da lista do esquema => Math
+    //Math.floor((Math.random() * MAX) + INI)
+    // index aleatoria variando de 0 ao tamanho máximo autal matrix
+    // retirar o valor de dentro da matriz;
+    // ao final, preencher novamente matriz;
+    
+    esq1_rico_list_index = esq1_rico_list_index + 1;
+    let intervalo = esq1_rico_intervalos[esq1_rico_list_index] * 1000;
+    setTimeout(function(){ esq1RicoSetNextInt(); }, intervalo);
  }
 </script>
