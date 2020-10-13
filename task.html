@@ -40,6 +40,14 @@
     margin: auto;
    }
   </style>
+  
+  <style>
+    #btnEsq1Rico {
+      position: absolute;
+    }   
+   }
+  </style>
+
 
 </head>
 
@@ -79,6 +87,50 @@ let esq1_rico_intervalos = [5, 3, 5, 2];
 let esq1_rico_list_index = 0;
 
 let esq1_rico_reforco_disponivel = false;
+
+let passos = 0;
+let direcao = 1;
+
+let esq1_rico_top = 100;
+let esq1_rico_left = 10;
+
+
+setInterval(function(){  mover(); }, 1000);
+
+function mover() {
+
+	if (passos === 3) {
+ 	 //document.getElementById("btnChangeSchedule").innerHTML =passos;
+  	direcao = Math.floor((Math.random() * 2) + 1);// colocar para 4
+    passos = 0;
+  }
+  
+	if (esq1_rico_left >= 100) {
+     passos = 2;
+  }
+  
+  if (esq1_rico_top >= 300) {
+  	esq1_rico_top = 100;
+    passos = 2;
+  }
+  
+   if (direcao === 1) {
+   esq1_rico_left = esq1_rico_left + 10;
+   esq1_rico_top = esq1_rico_top + 10; 	
+  }
+  
+  if (direcao === 2) {
+  	esq1_rico_left = esq1_rico_left - 10;
+ 		esq1_rico_top = esq1_rico_top - 10;
+  }
+
+
+ 
+ document.getElementById("btnEsq1Rico").style.left = esq1_rico_left + "px";
+ document.getElementById("btnEsq1Rico").style.top = esq1_rico_top + "px";
+
+	passos = passos + 1;
+}
 
 setTimeout(function(){ esq1RicoSetNextInt(); }, esq1_rico_intervalos[esq1_rico_list_index] * 1000);
 
