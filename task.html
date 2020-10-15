@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title>Projeto contexto</title>
+</head>
+<body>
+<div id="divVariables"></div>
+<div id="divTask">
+    <div id="divReforco">
+        <h1>+ R$ 0,10</h1>
+        <img src="reforco.gif" alt="+">
+    </div>
+    <div id="divTop">
+        <button id="btnToogleDivVariables" type="button" onclick="toogleDivVariables()">Show/Hide Variables</button>
+        <button id="btnConsumirReforcador" type="button" onclick="presentReinforcer()">Pegar</button>
+        <button id="btnChangeOver" type="button">&larr; &rarr; </button>
+    </div>
+
+    <div id="divLeft">
+        <button id="btnOperando1" type="button"
+                onclick="onClickOperando1()"
+        </button>
+        <button id="btnOperando2" type="button"></button>
+    </div>
+
+    <div id="divRight">
+        <button id="btnOperando3" type="button"></button>
+        <button id="btnOperando4" type="button"></button>
+    </div>
+</div>
+
+
+</body>
+</html>
+
+<script>
+    // pega as dimensões da janela do navegador
+    let window_width = window.innerWidth;
+    let window_height = window.innerHeight;
+
+    let current_reinforcer = 0;
+
+    //Definição das variáveis
+    let operando1_top = 50;
+    let operando1_left = 50;
+
+    let operando1_counter = 0;
+    let operando1_cumulative_recorder = []; //[counter, cumulativa, timestamp]
+    let operando1_intervals = [10, 11, 9, 5, 8, 9];
+    let operando1_intervals_sort = [10, 11, 9, 5, 8, 9];
+    let operando1_current_interval = 0;
+    let operando1_reinforcers = 0;
+    let operando1_reinforcers_missed = 0;
+    let operando1_reinforcer_available = false;
+
+    let operando2_top = 50;
+    let operando2_left = 50;
+
+    let operando3_top = 50;
+    let operando3_left = 50;
+
+    let operando4_top = 50;
+    let operando4_left = 50;
+
+    // Cria inicia intervals
+    let timer_refresh_div_variables;
+
+    let timer_operando1_moviment = setInterval(moveOperando1, 1000);
+    let timer_operando2_moviment = setInterval(moveOperando2, 1000);
+    let timer_operando3_moviment = setInterval(moveOperando3, 1000);
+    let timer_operando4_moviment = setInterval(moveOperando4, 1000);
+
+    let timer_operando1_release_reinforcer;
+    let timer_lh;
+
+    // Cria variáveis que "representam os objetos HTML"
+    let divTask = document.getElementById("divTask");
+    let divReforco = document.getElementById("divReforco");
+    let divTop = document.getElementById("divTop");
+    let divLeft = document.getElementById("divLeft");
+    let divRight = document.getElementById("divRight");
+    let divVariables = document.getElementById("divVariables");
+    let btnOperando1 = document.getElementById("btnOperando1");
+    let btnOperando2 = document.getElementById("btnOperando2");
+    let btnOperando3 = document.getElementById("btnOperando3");
+    let btnOperando4 = document.getElementById("btnOperando4");
+    let btnConsumirReforcador = document.getElementById("btnConsumirReforcador");
+    let btnChangeOver = document.getElementById("btnChangeOver");
+    
+    // configuração do painel geral
+    divTask.style.position = "absolute";
+    divTask.style.outline = "1px solid";
+    divTask.style.top = "5%";
+    divTask.style.left = "5%";
+    divTask.style.width = "90%";
+    divTask.style.height = "90%";
+
+    // configuração do painel superior
+    divTop.style.position = "absolute";
+    divTop.style.outline = "1px solid";
+    divTop.style.top = "5%";
+    divTop.style.left = "5%";
+    divTop.style.width = "90%";
+    divTop.style.height = "10%";
+
+    // configuração do painel de reforço
+    divReforco.style.position = "absolute";
+    divReforco.style.outline = "1px solid";
+    divReforco.style.top = "25%";
+    divReforco.style.left = "37%";
+    divReforco.style.width = "25%";
+    divReforco.style.height = "25%";
+    divReforco.style.display = "none";
+    divReforco.style.textAlign = "center";
+
+    // configuração do painel esquerdo
+    divLeft.style.position = "absolute";
+    divLeft.style.outline = "1px solid";
+    divLeft.style.top = "20%";
+    divLeft.style.left = "5%";
+    divLeft.style.width = "43%";
+    divLeft.style.height = "75%";
+
+    // configuração do painel direito
+    divRight.style.position = "absolute";
+    divRight.style.outline = "1px solid";
+    divRight.style.top = "20%";
+    divRight.style.left = "50%";
+    divRight.style.width = "45%";
+    divRight.style.height = "75%";
+
+    // configuração do painel de variáveis
+    divVariables.style.position = "absolute";
+    divVariables.style.outline = "1px solid";
+    divVariables.style.top = "5%";
+    divVariables.style.left = "5%";
+    divVariables.style.width = "25%";
+    divVariables.style.height = "90%";
+    divVariables.style.display = "none";
+
+    // configuração do Operando 1
+    btnOperando1.style.position = "absolute";
+    btnOperando1.style.background='red';
+    btnOperando1.style.top = operando1_top + "%";
+    btnOperando1.style.left = operando1_left + "%";
+    btnOperando1.style.width = "10%";
+    btnOperando1.style.height = "10%";
+
+    // configuração do Operando 2
+    btnOperando2.style.position = "absolute";
+    btnOperando2.style.background='yellow';
+    btnOperando2.style.top = operando2_top + "%";
+    btnOperando2.style.left = operando2_left + "%";
+    btnOperando2.style.width = "10%";
+    btnOperando2.style.height = "10%";
+
+    // configuração do Operando 3
+    btnOperando3.style.position = "absolute";
+    btnOperando3.style.background='blue';
+    btnOperando3.style.top = operando3_top + "%";
+    btnOperando3.style.left = "10%";
+    btnOperando3.style.width = "10%";
+    btnOperando3.style.height = "10%";
+
+    // configuração do Operando 4
+    btnOperando4.style.position = "absolute";
+    btnOperando4.style.background='green';
+    btnOperando4.style.top = operando4_top + "%";
+    btnOperando4.style.left = "80%";
+    btnOperando4.style.width = "10%";
+    btnOperando4.style.height = "10%";
+
+    // configuração do Botão de consumo
+    btnConsumirReforcador.style.position = "absolute";
+    btnConsumirReforcador.style.background='white';
+    btnConsumirReforcador.style.top = "10%";
+    btnConsumirReforcador.style.left = "80%";
+    btnConsumirReforcador.style.width = "10%";
+    btnConsumirReforcador.style.height = "70%";
+    btnConsumirReforcador.disabled = true;
+
+    // configuração do Botão de ChangeOver
+    btnChangeOver.style.position = "absolute";
+    btnChangeOver.style.background='gray';
+    btnChangeOver.style.fontSize = "xx-large";
+    btnChangeOver.style.top = "10%";
+    btnChangeOver.style.left = "45%";
+    btnChangeOver.style.width = "10%";
+    btnChangeOver.style.height = "70%";
+
+    // cria objeto na tela - para usar no lugar de alert
+    // let t = document.createTextNode("* OK * ");
+    // document.body.appendChild(t);
+
+    // Inicia timers depois que a página é completamente carregada
+    document.addEventListener("DOMContentLoaded", startIntervalOperando1);
+
+    function startIntervalOperando1() {
+        operando1_current_interval = getNextIntervalForOperando1();
+        timer_operando1_release_reinforcer = setTimeout(releaseReinforcerOperando1, operando1_current_interval * 1000);
+        divReforco.style.display = "none";
+        divTop.style.display = "block";
+        divLeft.style.display = "block";
+        divRight.style.display = "block";
+    }
+
+    function releaseReinforcerOperando1() {
+        operando1_reinforcer_available = true;
+    }
+
+    //Respostas
+    function onClickOperando1() {
+        btnOperando1.style.background='#ffcccc';
+        setTimeout(function(){ btnOperando1.style.background='red'; }, 100);
+
+        operando1_counter += 1;
+        if (operando1_reinforcer_available === true) {
+            current_reinforcer = 1;
+            operando1_reinforcer_available = false;
+            btnConsumirReforcador.disabled = false;
+            startLH();
+        }
+    }
+
+    // LH
+    function startLH() {
+        timer_lh = setTimeout(removeReinforcer, 3000);
+    }
+
+    function removeReinforcer() {
+        btnConsumirReforcador.disabled = true;
+
+        if (current_reinforcer === 1) {
+            startIntervalOperando1();
+            operando1_reinforcers_missed += 1;
+        }
+    }
+
+    function presentReinforcer() {
+        clearInterval(timer_lh);
+        divReforco.style.display = "block";
+        divTop.style.display = "none";
+        divLeft.style.display = "none";
+        divRight.style.display = "none";
+        btnConsumirReforcador.disabled = true;
+
+        if (current_reinforcer === 1) {
+            operando1_reinforcers = operando1_reinforcers + 1;
+            setTimeout(startIntervalOperando1, 2000);
+        }
+
+    }
+
+    //Movimentação dos operandos
+    function moveOperando1() {
+        let step_h = Math.floor(Math.random() * 2) + 1;
+        let step_v = Math.floor(Math.random() * 2) + 1;
+
+        if (step_h === 1) operando1_top = operando1_top + 5;
+        if (step_h === 2) operando1_top = operando1_top - 5;
+
+        if (step_v === 1) operando1_left = operando1_left + 5;
+        if (step_v === 2) operando1_left = operando1_left - 5;
+
+        if (operando1_top <= 10) operando1_top = operando1_top + 5;
+        if (operando1_top >= 90) operando1_top = operando1_top - 5;
+
+        if (operando1_left <= 10) operando1_left = operando1_left + 5;
+        if (operando1_left >= 90) operando1_left = operando1_left - 5;
+
+        btnOperando1.style.top = operando1_top + "%";
+        btnOperando1.style.left = operando1_left + "%";
+    }
+
+    function moveOperando2() {
+        let step_h = Math.floor(Math.random() * 2) + 1;
+        let step_v = Math.floor(Math.random() * 2) + 1;
+
+        if (step_h === 1) operando2_top = operando2_top + 5;
+        if (step_h === 2) operando2_top = operando2_top - 5;
+
+        if (step_v === 1) operando2_left = operando2_left + 5;
+        if (step_v === 2) operando2_left = operando2_left - 5;
+
+        if (operando2_top <= 10) operando2_top = operando2_top + 5;
+        if (operando2_top >= 90) operando2_top = operando2_top - 5;
+
+        if (operando2_left <= 10) operando2_left = operando2_left + 5;
+        if (operando2_left >= 90) operando2_left = operando2_left - 5;
+
+        btnOperando2.style.top = operando2_top + "%";
+        btnOperando2.style.left = operando2_left + "%";
+    }
+
+    function moveOperando3() {
+        let step_h = Math.floor(Math.random() * 2) + 1;
+        let step_v = Math.floor(Math.random() * 2) + 1;
+
+        if (step_h === 1) operando3_top = operando3_top + 5;
+        if (step_h === 2) operando3_top = operando3_top - 5;
+
+        if (step_v === 1) operando3_left = operando3_left + 5;
+        if (step_v === 2) operando3_left = operando3_left - 5;
+
+        if (operando3_top <= 10) operando3_top = operando3_top + 5;
+        if (operando3_top >= 90) operando3_top = operando3_top - 5;
+
+        if (operando3_left <= 10) operando3_left = operando3_left + 5;
+        if (operando3_left >= 90) operando3_left = operando3_left - 5;
+
+        btnOperando3.style.top = operando3_top + "%";
+        btnOperando3.style.left = operando3_left + "%";
+    }
+
+    function moveOperando4() {
+        let step_h = Math.floor(Math.random() * 2) + 1;
+        let step_v = Math.floor(Math.random() * 2) + 1;
+
+        if (step_h === 1) operando4_top = operando4_top + 5;
+        if (step_h === 2) operando4_top = operando4_top - 5;
+
+        if (step_v === 1) operando4_left = operando4_left + 5;
+        if (step_v === 2) operando4_left = operando4_left - 5;
+
+        if (operando4_top <= 10) operando4_top = operando4_top + 5;
+        if (operando4_top >= 90) operando4_top = operando4_top - 5;
+
+        if (operando4_left <= 10) operando4_left = operando4_left + 5;
+        if (operando4_left >= 90) operando4_left = operando4_left - 5;
+
+        btnOperando4.style.top = operando4_top + "%";
+        btnOperando4.style.left = operando4_left + "%";
+    }
+
+    function toogleDivVariables() {
+        if (divVariables.style.display === "none") {
+            divVariables.style.display = "block";
+            divTask.style.left = "30%";
+            divTask.style.width = "65%";
+            timer_refresh_div_variables = setInterval(refreshDivVariables, 1000);
+        } else {
+            divVariables.style.display = "none";
+            divTask.style.left = "5%";
+            divTask.style.width = "90%";
+            clearInterval(timer_refresh_div_variables);
+        }
+    }
+
+    function refreshDivVariables() {
+        let text = '';
+        text = text + "operando1_counter: " + operando1_counter + "<br>";
+        text = text + "operando1_reinforcers: " + operando1_reinforcers + "<br>";
+        text = text + "operando1_reinforcers_missed: " + operando1_reinforcers_missed + "<br>";
+        text = text + "operando1_current_interval: " + operando1_current_interval + "<br>";
+        text = text + "operando1_cumulative_recorder: " + operando1_cumulative_recorder + "<br>";
+        text = text + "operando1_intervals: " + operando1_intervals + "<br>";
+        text = text + "operando1_intervals_sort: " + operando1_intervals_sort + "<br>";
+        text = text + "operando1_reinforcer_available: " + operando1_reinforcer_available + "<br>";
+
+
+
+        divVariables.innerHTML = text;
+    }
+
+    function getNextIntervalForOperando1() {
+        let interval = 0;
+        let array_size = operando1_intervals_sort.length;
+        let index = 0;
+
+        if (array_size === 0) {
+            operando1_intervals_sort = operando1_intervals;
+        }
+
+        index = Math.floor((Math.random() * array_size) + 1);
+        index = index - 1;
+        // let t = document.createTextNode(index + " ");
+        // document.body.appendChild(t);
+        interval = operando1_intervals_sort[index];
+        operando1_intervals_sort.splice(index, 1); // remove item da array
+        return interval;
+    }
+</script>
