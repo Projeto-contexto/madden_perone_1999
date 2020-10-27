@@ -38,55 +38,32 @@ div {
 <body>
 
 <h2>Preencha os dados a seguir</h2>
-<form action="inst.html" method="get">
-  <table style="width:100%">
-    <tr>
-      <th>Nome:</th>
-      <td><input name="name" type="text"></td>
-    </tr>
-    <tr>
-      <th>Idade: </th>
-      <td><input name="age" type="text"></td>
-    </tr>
-    <tr>
-      <th>Gênero:</th>
-      <td>
-        <select name="Genero" id="Genero">
+  <div>
+  <form action="/action_page.php">
+    <label for="fname">Nome</label>
+    <input type="text" id="fname" name="firstname" placeholder="Your name..">
+
+    <label for="age">Idade</label>
+    <input type="text" id="age" name="idade" placeholder="Your last name..">
+
+    <label for="genero">Gênero</label>
+    <select name="Genero" id="Genero">
           <option value="">[Escolher]</option>
           <option value="Feminino">Feminino</option>
           <option value="Masculino">Masculino</option>
           <option value="Outros">Outros</option>
           <option value="Não responder">Não responder</option>
-    </select>
-
-      </td>
-    </tr>
-  </table>
-  <hr>
-  <table style="width:100%">
-    <tr>
-      <th><button type="submit">AVANÇAR</button></th>
-    </tr>
-</table>
-</form>
-<br><br><br><br>
-  
-  <div>
-  <form action="/action_page.php">
-    <label for="fname">First Name</label>
-    <input type="text" id="fname" name="firstname" placeholder="Your name..">
-
-    <label for="lname">Last Name</label>
-    <input type="text" id="lname" name="lastname" placeholder="Your last name..">
-
+      
+      
     <label for="country">Country</label>
     <select id="country" name="country">
-      <option value="australia">Australia</option>
-      <option value="canada">Canada</option>
+      <option value="brasil">Brasil</option>
+      <option value="mexico">México</option>
       <option value="usa">USA</option>
     </select>
+    
   
-    <input type="submit" value="Submit">
+    <input type="submit" value="Avançar">
   </form>
 </div>
 </body>
