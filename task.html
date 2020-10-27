@@ -50,6 +50,7 @@
     let operando1_reinforcers = 0;
     let operando1_reinforcers_missed = 0;
     let operando1_reinforcer_available = false;
+    let operando1_timer = 0;
 
     let operando2_top = 50;
     let operando2_left = 50;
@@ -100,6 +101,9 @@
     let timer_operando3_release_reinforcer;
     let timer_operando4_release_reinforcer;
     let timer_lh;
+
+		// conta milissegundos
+		let timer_operando1;
 
     // Cria variáveis que "representam os objetos HTML"
     let divTask = document.getElementById("divTask");
@@ -227,9 +231,21 @@
     document.addEventListener("DOMContentLoaded", startIntervalOperando3);
     document.addEventListener("DOMContentLoaded", startIntervalOperando4);
 
+
+		// Timer - esquemas
+    function timer_operando1_counter() {
+      operando1_timer -= 1000;
+    }
+    
     function startIntervalOperando1() {
         operando1_current_interval = getNextIntervalForOperando1();
+
+        operando1_timer = operando1_current_interval * 1000;
+				timer_operando1 = setInterval(timer_operando1_counter, 1000);
+        
+        
         timer_operando1_release_reinforcer = setTimeout(releaseReinforcerOperando1, operando1_current_interval * 1000);
+        
         divReforco.style.display = "none";
         divTop.style.display = "block";
         divLeft.style.display = "block";
@@ -492,6 +508,8 @@
     function refreshDivVariables() {
         let text = '';
         text = text + "operando1_counter: " + operando1_counter + "<br>";
+        text = text + "operando1_timer: " + operando1_timer + "<br>";
+      
         text = text + "operando1_reinforcers: " + operando1_reinforcers + "<br>";
         text = text + "operando1_reinforcers_missed: " + operando1_reinforcers_missed + "<br>";
         text = text + "operando1_current_interval: " + operando1_current_interval + "<br>";
