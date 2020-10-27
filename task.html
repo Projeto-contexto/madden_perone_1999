@@ -301,7 +301,7 @@
 
        operando2_counter += 1;
        if (operando2_reinforcer_available === true) {
-           current_reinforcer = 1;
+           current_reinforcer = 2;
            operando2_reinforcer_available = false;
            btnConsumirReforcador.disabled = false;
            startLH();
@@ -316,7 +316,7 @@
 
       operando3_counter += 1;
       if (operando3_reinforcer_available === true) {
-         current_reinforcer = 1;
+         current_reinforcer = 3;
          operando3_reinforcer_available = false;
          btnConsumirReforcador.disabled = false;
          startLH();
@@ -331,7 +331,7 @@
 
      operando4_counter += 1;
      if (operando4_reinforcer_available === true) {
-         current_reinforcer = 1;
+         current_reinforcer = 4;
          operando4_reinforcer_available = false;
          btnConsumirReforcador.disabled = false;
          startLH();
@@ -351,15 +351,15 @@
             startIntervalOperando1();
             operando1_reinforcers_missed += 1;
         }
-        if (current_reinforcer === 1) {
+        if (current_reinforcer === 2) {
           startIntervalOperando2();
           operando2_reinforcers_missed += 1;
         }
-        if (current_reinforcer === 1) {
+        if (current_reinforcer === 3) {
           startIntervalOperando3();
           operando3_reinforcers_missed += 1;
         }
-        if (current_reinforcer === 1) {
+        if (current_reinforcer === 4) {
           startIntervalOperando4();
           operando4_reinforcers_missed += 1;
         }
@@ -379,15 +379,15 @@
             operando1_reinforcers = operando1_reinforcers + 1;
             setTimeout(startIntervalOperando1, 2000);
         }
-        if (current_reinforcer === 1) {
+        if (current_reinforcer === 2) {
           operando2_reinforcers = operando2_reinforcers + 1;
           setTimeout(startIntervalOperando2, 2000);
         }
-        if (current_reinforcer === 1) {
+        if (current_reinforcer === 3) {
           operando3_reinforcers = operando3_reinforcers + 1;
           setTimeout(startIntervalOperando3, 2000);
         }
-        if (current_reinforcer === 1) {
+        if (current_reinforcer === 4) {
           operando4_reinforcers = operando4_reinforcers + 1;
           setTimeout(startIntervalOperando4, 2000);
         }
