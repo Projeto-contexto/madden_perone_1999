@@ -222,7 +222,10 @@
     // document.body.appendChild(t);
 
     // Inicia timers depois que a página é completamente carregada
-    document.addEventListener("DOMContentLoaded", startIntervalOperando1, startIntervalOperando2, startIntervalOperando3, startIntervalOperando2);
+    document.addEventListener("DOMContentLoaded", startIntervalOperando1);
+    document.addEventListener("DOMContentLoaded", startIntervalOperando2);
+    document.addEventListener("DOMContentLoaded", startIntervalOperando3);
+    document.addEventListener("DOMContentLoaded", startIntervalOperando4);
 
     function startIntervalOperando1() {
         operando1_current_interval = getNextIntervalForOperando1();
