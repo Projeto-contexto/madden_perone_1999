@@ -63,6 +63,7 @@
     let operando2_reinforcers = 0;
     let operando2_reinforcers_missed = 0;
     let operando2_reinforcer_available = false;
+    let operando2_timer = 0;
 
     let operando3_top = 50;
     let operando3_left = 50;
@@ -75,6 +76,7 @@
     let operando3_reinforcers = 0;
     let operando3_reinforcers_missed = 0;
     let operando3_reinforcer_available = false;
+    let operando3_timer = 0;
 
     let operando4_top = 50;
     let operando4_left = 50;
@@ -87,6 +89,7 @@
     let operando4_reinforcers = 0;
     let operando4_reinforcers_missed = 0;
     let operando4_reinforcer_available = false;
+    let operando4_timer = 0;
 
     // Cria inicia intervals
     let timer_refresh_div_variables;
@@ -104,6 +107,10 @@
 
 		// conta milissegundos
 		let timer_operando1;
+    let timer_operando2;
+    let timer_operando3;
+    let timer_operando4;
+    
 
     // Cria variáveis que "representam os objetos HTML"
     let divTask = document.getElementById("divTask");
@@ -255,9 +262,16 @@
     function releaseReinforcerOperando1() {
         operando1_reinforcer_available = true;
     }
+    
+    
+    function timer_operando2_counter() {
+      operando2_timer -= 1000;
+    }
 
     function startIntervalOperando2() {
         operando2_current_interval = getNextIntervalForOperando2();
+        operando2_timer = operando2_current_interval * 1000;
+				timer_operando2 = setInterval(timer_operando2_counter, 1000);
         timer_operando2_release_reinforcer = setTimeout(releaseReinforcerOperando2, operando2_current_interval * 1000);
         divReforco.style.display = "none";
         divTop.style.display = "block";
@@ -269,8 +283,14 @@
         operando2_reinforcer_available = true;
     }
 
+
+    function timer_operando3_counter() {
+      operando3_timer -= 1000;
+    }
     function startIntervalOperando3() {
         operando3_current_interval = getNextIntervalForOperando3();
+        operando3_timer = operando3_current_interval * 1000;
+				timer_operando3 = setInterval(timer_operando3_counter, 1000);
         timer_operando3_release_reinforcer = setTimeout(releaseReinforcerOperando3, operando3_current_interval * 1000);
         divReforco.style.display = "none";
         divTop.style.display = "block";
@@ -282,8 +302,14 @@
         operando3_reinforcer_available = true;
     }
 
+
+    function timer_operando4_counter() {
+      operando4_timer -= 1000;
+     }
     function startIntervalOperando4() {
         operando4_current_interval = getNextIntervalForOperando4();
+        operando4_timer = operando4_current_interval * 1000;
+				timer_operando4 = setInterval(timer_operando4_counter, 1000);
         timer_operando4_release_reinforcer = setTimeout(releaseReinforcerOperando4, operando4_current_interval * 1000);
         divReforco.style.display = "none";
         divTop.style.display = "block";
@@ -519,6 +545,8 @@
         text = text + "operando1_reinforcer_available: " + operando1_reinforcer_available + "<br>";
        
         text = text + "operando2_counter: " + operando2_counter + "<br>";
+        text = text + "operando2_timer: " + operando2_timer + "<br>";
+        
         text = text + "operando2_reinforcers: " + operando2_reinforcers + "<br>";
         text = text + "operando2_reinforcers_missed: " + operando2_reinforcers_missed + "<br>";
         text = text + "operando2_current_interval: " + operando2_current_interval + "<br>";
@@ -528,6 +556,8 @@
         text = text + "operando2_reinforcer_available: " + operando2_reinforcer_available + "<br>";
 
         text = text + "operando3_counter: " + operando3_counter + "<br>";
+        text = text + "operando3_timer: " + operando3_timer + "<br>";
+        
         text = text + "operando3_reinforcers: " + operando3_reinforcers + "<br>";
         text = text + "operando3_reinforcers_missed: " + operando3_reinforcers_missed + "<br>";
         text = text + "operando3_current_interval: " + operando3_current_interval + "<br>";
@@ -537,6 +567,8 @@
         text = text + "operando3_reinforcer_available: " + operando3_reinforcer_available + "<br>";
 
         text = text + "operando4_counter: " + operando4_counter + "<br>";
+        text = text + "operando4_timer: " + operando4_timer + "<br>";
+        
         text = text + "operando4_reinforcers: " + operando4_reinforcers + "<br>";
         text = text + "operando4_reinforcers_missed: " + operando4_reinforcers_missed + "<br>";
         text = text + "operando4_current_interval: " + operando4_current_interval + "<br>";
@@ -620,4 +652,9 @@
     operando4_intervals_sort.splice(index, 1); // remove item da array
     return interval;
    }
+	
 </script>
+    
+
+
+   
