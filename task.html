@@ -18,7 +18,7 @@
     </div>
 
     <div id="divLeft">
-        <button id="btnOperando1" type="button" onclick="onClickOperando1()">1</button>
+        <button id="btnOperando1" type="button" onclick="onClickOperando1()">1x</button>
         <button id="btnOperando2" type="button" onclick="onClickOperando2()">2</button>
     </div>
 
@@ -587,7 +587,9 @@
         let index = 0;
 
         if (array_size === 0) {
-            operando1_intervals_sort = operando1_intervals;
+		let parcial;
+		parcial = operando1_intervals;
+            	operando1_intervals_sort = parcial;
         }
 
         index = Math.floor((Math.random() * array_size) + 1);
