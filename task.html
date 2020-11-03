@@ -13,8 +13,9 @@
     
     <div id="divTop">
         <button id="btnToogleDivVariables" type="button" onclick="toogleDivVariables()">Show/Hide Variables</button>
+        <button id="btnChangeOverLeft" type="button">Trocar L</button>
+        <button id="btnChangeOverRight" type="button">Trocar R</button>
         <button id="btnConsumirReforcador" type="button" onclick="presentReinforcer()">Pegar</button>
-        <button id="btnChangeOver" type="button"> &larr; &rarr; </button>
     </div>
 
     <div id="divLeft">
@@ -110,6 +111,7 @@
     let timer_operando2;
     let timer_operando3;
     let timer_operando4;
+    let timer_change_component;
     
 
     // Cria variáveis que "representam os objetos HTML"
@@ -125,6 +127,9 @@
     let btnOperando4 = document.getElementById("btnOperando4");
     let btnConsumirReforcador = document.getElementById("btnConsumirReforcador");
     let btnChangeOver = document.getElementById("btnChangeOver");
+
+    //Multiple component
+    let mult_current_component = "L";
     
     // configuração do painel geral
     divTask.style.position = "absolute";
@@ -213,20 +218,32 @@
     btnConsumirReforcador.style.position = "absolute";
     btnConsumirReforcador.style.background='white';
     btnConsumirReforcador.style.top = "10%";
-    btnConsumirReforcador.style.left = "80%";
+    btnConsumirReforcador.style.left = "45%";
     btnConsumirReforcador.style.width = "10%";
     btnConsumirReforcador.style.height = "70%";
     btnConsumirReforcador.disabled = true;
     
 
-    // configuração do Botão de ChangeOver
-    btnChangeOver.style.position = "absolute";
-    btnChangeOver.style.background='gray';
-    btnChangeOver.style.fontSize = "xx-large";
-    btnChangeOver.style.top = "10%";
-    btnChangeOver.style.left = "45%";
-    btnChangeOver.style.width = "10%";
-    btnChangeOver.style.height = "70%";
+    // configuração do Botão de ChangeOver left
+    btnChangeOverLeft.style.position = "absolute";
+    btnChangeOverLeft.style.background='gray';
+    btnChangeOverLeft.style.fontSize = "large";
+    btnChangeOverLeft.style.top = "5%";
+    btnChangeOverLeft.style.left = "15%";
+    btnChangeOverLeft.style.width = "15%";
+    btnChangeOverLeft.style.height = "75%";
+    btnChangeOverLeft.style.display = "block";
+    
+    // configuração do Botão de ChangeOver right
+    btnChangeOverRight.style.position = "absolute";
+    btnChangeOverRight.style.background='gray';
+    btnChangeOverRight.style.fontSize = "large";
+    btnChangeOverRight.style.top = "5%";
+    btnChangeOverRight.style.left = "65%";
+    btnChangeOverRight.style.width = "15%";
+    btnChangeOverRight.style.height = "75%";
+    btnChangeOverRight.style.display = "none";
+    
 
     // cria objeto na tela - para usar no lugar de alert
     // let t = document.createTextNode("* OK * ");
@@ -237,8 +254,37 @@
     document.addEventListener("DOMContentLoaded", startIntervalOperando2);
     document.addEventListener("DOMContentLoaded", startIntervalOperando3);
     document.addEventListener("DOMContentLoaded", startIntervalOperando4);
+    
+    //Component
+    document.addEventListener("DOMContentLoaded", startIntervalChangeComponent);
 
-
+		// Contole do múltiplo
+		function startIntervalChangeComponent() {
+    	timer_change_component = setInterval(change_component, 3000);
+    }
+    
+    function change_component() {
+    	if (mult_current_component === "L") {
+      	mult_current_component = "R";
+        startRigthComponent();
+      } else {
+      	mult_current_component = "L";
+        startLeftComponent()
+      }
+    }
+    
+    function startLeftComponent() {
+    	btnChangeOverRight.style.display = "none";
+      btnChangeOverLeft.style.display = "block";
+    }
+    
+    function startRigthComponent() {
+    	btnChangeOverRight.style.display = "block";
+      btnChangeOverLeft.style.display = "none";
+    }
+   
+    
+    
 		// Timer - esquemas
     function timer_operando1_counter() {
       operando1_timer -= 1000;
@@ -656,7 +702,3 @@
    }
 	
 </script>
-    
-
-
-   
