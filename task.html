@@ -45,8 +45,8 @@
 
     let operando1_counter = 0;
     let operando1_cumulative_recorder = []; //[counter, cumulativa, timestamp]
-    let operando1_intervals = [10, 11, 9, 5, 8, 9];
-    let operando1_intervals_sort = [10, 11, 9, 5, 8, 9];
+    //let operando1_intervals = [10, 11, 9, 5, 8, 9];
+    let operando1_intervals_sort = [];
     let operando1_current_interval = 0;
     let operando1_reinforcers = 0;
     let operando1_reinforcers_missed = 0;
@@ -58,7 +58,7 @@
 
     let operando2_counter = 0;
     let operando2_cumulative_recorder = []; //[counter, cumulativa, timestamp]
-    let operando2_intervals = [10, 11, 9, 5, 8, 9];
+    //let operando2_intervals = [10, 11, 9, 5, 8, 9];
     let operando2_intervals_sort = [10, 11, 9, 5, 8, 9];
     let operando2_current_interval = 0;
     let operando2_reinforcers = 0;
@@ -71,7 +71,7 @@
 
     let operando3_counter = 0;
     let operando3_cumulative_recorder = []; //[counter, cumulativa, timestamp]
-    let operando3_intervals = [10, 11, 9, 5, 8, 9];
+    //let operando3_intervals = [10, 11, 9, 5, 8, 9];
     let operando3_intervals_sort = [10, 11, 9, 5, 8, 9];
     let operando3_current_interval = 0;
     let operando3_reinforcers = 0;
@@ -84,7 +84,7 @@
 
     let operando4_counter = 0;
     let operando4_cumulative_recorder = []; //[counter, cumulativa, timestamp]
-    let operando4_intervals = [10, 11, 9, 5, 8, 9];
+    //let operando4_intervals = [10, 11, 9, 5, 8, 9];
     let operando4_intervals_sort = [10, 11, 9, 5, 8, 9];
     let operando4_current_interval = 0;
     let operando4_reinforcers = 0;
@@ -586,7 +586,7 @@
         text = text + "operando1_reinforcers_missed: " + operando1_reinforcers_missed + "<br>";
         text = text + "operando1_current_interval: " + operando1_current_interval + "<br>";
         text = text + "operando1_cumulative_recorder: " + operando1_cumulative_recorder + "<br>";
-        text = text + "operando1_intervals: " + operando1_intervals + "<br>";
+        //text = text + "operando1_intervals: " + operando1_intervals + "<br>";
         text = text + "operando1_intervals_sort: " + operando1_intervals_sort + "<br>";
         text = text + "operando1_reinforcer_available: " + operando1_reinforcer_available + "<br>";
        
@@ -597,7 +597,7 @@
         text = text + "operando2_reinforcers_missed: " + operando2_reinforcers_missed + "<br>";
         text = text + "operando2_current_interval: " + operando2_current_interval + "<br>";
         text = text + "operando2_cumulative_recorder: " + operando2_cumulative_recorder + "<br>";
-        text = text + "operando2_intervals: " + operando2_intervals + "<br>";
+        //text = text + "operando2_intervals: " + operando2_intervals + "<br>";
         text = text + "operando2_intervals_sort: " + operando2_intervals_sort + "<br>";
         text = text + "operando2_reinforcer_available: " + operando2_reinforcer_available + "<br>";
 
@@ -608,7 +608,7 @@
         text = text + "operando3_reinforcers_missed: " + operando3_reinforcers_missed + "<br>";
         text = text + "operando3_current_interval: " + operando3_current_interval + "<br>";
         text = text + "operando3_cumulative_recorder: " + operando3_cumulative_recorder + "<br>";
-        text = text + "operando3_intervals: " + operando3_intervals + "<br>";
+        //text = text + "operando3_intervals: " + operando3_intervals + "<br>";
         text = text + "operando3_intervals_sort: " + operando3_intervals_sort + "<br>";
         text = text + "operando3_reinforcer_available: " + operando3_reinforcer_available + "<br>";
 
@@ -619,7 +619,7 @@
         text = text + "operando4_reinforcers_missed: " + operando4_reinforcers_missed + "<br>";
         text = text + "operando4_current_interval: " + operando4_current_interval + "<br>";
         text = text + "operando4_cumulative_recorder: " + operando4_cumulative_recorder + "<br>";
-        text = text + "operando4_intervals: " + operando4_intervals + "<br>";
+        //text = text + "operando4_intervals: " + operando4_intervals + "<br>";
         text = text + "operando4_intervals_sort: " + operando4_intervals_sort + "<br>";
         text = text + "operando4_reinforcer_available: " + operando4_reinforcer_available + "<br>";
 
@@ -633,9 +633,7 @@
         let index = 0;
 
         if (array_size === 0) {
-		let parcial;
-		parcial = operando1_intervals;
-            	operando1_intervals_sort = parcial;
+            	operando1_intervals_sort = [10, 11, 9, 5, 8, 9];
         }
 
         index = Math.floor((Math.random() * array_size) + 1);
@@ -653,7 +651,7 @@
       let index = 0;
 
       if (array_size === 0) {
-          operando2_intervals_sort = operando2_intervals;
+          operando2_intervals_sort = [10, 11, 9, 5, 8, 9];
       }
 
       index = Math.floor((Math.random() * array_size) + 1);
@@ -671,7 +669,7 @@
       let index = 0;
 
       if (array_size === 0) {
-          operando3_intervals_sort = operando3_intervals;
+          operando3_intervals_sort = [10, 11, 9, 5, 8, 9];
       }
 
       index = Math.floor((Math.random() * array_size) + 1);
@@ -689,7 +687,7 @@
     let index = 0;
 
     if (array_size === 0) {
-        operando4_intervals_sort = operando4_intervals;
+        operando4_intervals_sort = [10, 11, 9, 5, 8, 9];
     }
 
     index = Math.floor((Math.random() * array_size) + 1);
