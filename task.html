@@ -52,7 +52,7 @@
     let operando1_reinforcers_missed = 0;
     let operando1_reinforcer_available = false;
     let operando1_timer = 0;
-
+    
     let operando2_top = 50;
     let operando2_left = 50;
 
@@ -112,6 +112,14 @@
     let timer_operando3;
     let timer_operando4;
     let timer_change_component;
+    
+    let pause_time_left = 0;
+    let pause_time_right = 0;
+    let pause_time_left_timer;
+    let pause_time_right_timer;
+    
+    //Esquemas - timers
+    let current_time_operando1;
     
 
     // Cria variáveis que "representam os objetos HTML"
@@ -267,7 +275,30 @@
     	if (mult_current_component === "L") {
       	mult_current_component = "R";
         startRigthComponent();
+        
+        //Para o relógio esquema 1
+        clearInterval(timer_operando1);
+        clearInterval(timer_operando1_release_reinforcer);
+        clearInterval(pause_time_left_timer);
+        
+        //Para o relógio esquema 2
+        //clearInterval(timer_operando1);
+        //clearInterval(timer_operando1_release_reinforcer);
+                   
+        //parar cronometros esquerdo;
+        
+        
       } else {
+  
+   			timer_operando1 = setInterval(timer_operando1_counter, 1000);
+        operando1_timer = pause_time_left * 1000;
+        
+        
+     
+  			let new_interval = operando1_current_interval - pause_time_left;
+  			        timer_operando1_release_reinforcer = setTimeout(releaseReinforcerOperando1, operando1_current_interval * 1000);
+  			 
+        
       	mult_current_component = "L";
         startLeftComponent()
       }
@@ -291,10 +322,19 @@
     }
     
     function startIntervalOperando1() {
+        
         operando1_current_interval = getNextIntervalForOperando1();
 
         operando1_timer = operando1_current_interval * 1000;
 				timer_operando1 = setInterval(timer_operando1_counter, 1000);
+        
+        
+        clearInterval(pause_time_left_timer);
+        pause_time_left_timer = setInterval(
+        	function(){ 
+          	pause_time_left = pause_time_left + 1; }
+           , 1000);
+
         
         
         timer_operando1_release_reinforcer = setTimeout(releaseReinforcerOperando1, operando1_current_interval * 1000);
@@ -581,6 +621,7 @@
         let text = '';
         text = text + "operando1_counter: " + operando1_counter + "<br>";
         text = text + "operando1_timer: " + operando1_timer + "<br>";
+        text = text + "pause_time_left: " + pause_time_left + "<br>";
       
         text = text + "operando1_reinforcers: " + operando1_reinforcers + "<br>";
         text = text + "operando1_reinforcers_missed: " + operando1_reinforcers_missed + "<br>";
@@ -633,7 +674,7 @@
         let index = 0;
 
         if (array_size === 0) {
-            	operando1_intervals_sort = [10, 11, 9, 5, 8, 9];
+            	operando1_intervals_sort = [10, 11, 9, 5, 8, 9, 7];
         }
 
         index = Math.floor((Math.random() * array_size) + 1);
