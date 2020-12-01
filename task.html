@@ -2,6 +2,7 @@
 <html lang="pt">
 <head>
     <title>Projeto contexto</title>
+
 </head>
 <body>
 <div id="divVariables"></div>
@@ -10,12 +11,11 @@
         <h1>+ R$ 0,10</h1>
         <img src="reforco.gif" alt="+">
     </div>
-    
     <div id="divTop">
-        <button id="btnToogleDivVariables" type="button" onclick="toogleDivVariables()">Show/Hide Variables</button>
-        <button id="btnChangeOverLeft" type="button">Trocar L</button>
-        <button id="btnChangeOverRight" type="button">Trocar R</button>
-        <button id="btnConsumirReforcador" type="button" onclick="presentReinforcer()">Pegar</button>
+        <button id="btnToogleDivVariables" type="button" onclick="toggleDivVariables()">Show/Hide Variables</button>
+        <button id="btnChangeOverLeft" type="button" onclick="onClickBtnChangeOverLeft()">Trocar L</button>
+        <button id="btnChangeOverRight" type="button" onclick="onClickBtnChangeOverRight()">Trocar R</button>
+        <button id="btnConsumirReforcador" type="button" onclick="onClickConsumatoryButton()">Pegar</button>
     </div>
 
     <div id="divLeft">
@@ -27,100 +27,25 @@
         <button id="btnOperando3" type="button" onclick="onClickOperando3()">3</button>
         <button id="btnOperando4" type="button" onclick="onClickOperando4()">4</button>
     </div>
-
+</div>
 
 </body>
 </html>
 
 <script>
-    // pega as dimensões da janela do navegador
-    let window_width = window.innerWidth;
-    let window_height = window.innerHeight;
+    let schedule_1;
+    let schedule_2;
+    let schedule_3;
+    let schedule_4;
 
-    let current_reinforcer = 0;
+    let db;
+    let component;
 
-    //Definição das variáveis
-    let operando1_top = 50;
-    let operando1_left = 50;
+    let reinforcer_control;
 
-    let operando1_counter = 0;
-    let operando1_cumulative_recorder = []; //[counter, cumulativa, timestamp]
-    //let operando1_intervals = [10, 11, 9, 5, 8, 9];
-    let operando1_intervals_sort = [];
-    let operando1_current_interval = 0;
-    let operando1_reinforcers = 0;
-    let operando1_reinforcers_missed = 0;
-    let operando1_reinforcer_available = false;
-    let operando1_timer = 0;
-    
-    let operando2_top = 50;
-    let operando2_left = 50;
-
-    let operando2_counter = 0;
-    let operando2_cumulative_recorder = []; //[counter, cumulativa, timestamp]
-    //let operando2_intervals = [10, 11, 9, 5, 8, 9];
-    let operando2_intervals_sort = [10, 11, 9, 5, 8, 9];
-    let operando2_current_interval = 0;
-    let operando2_reinforcers = 0;
-    let operando2_reinforcers_missed = 0;
-    let operando2_reinforcer_available = false;
-    let operando2_timer = 0;
-
-    let operando3_top = 50;
-    let operando3_left = 50;
-
-    let operando3_counter = 0;
-    let operando3_cumulative_recorder = []; //[counter, cumulativa, timestamp]
-    //let operando3_intervals = [10, 11, 9, 5, 8, 9];
-    let operando3_intervals_sort = [10, 11, 9, 5, 8, 9];
-    let operando3_current_interval = 0;
-    let operando3_reinforcers = 0;
-    let operando3_reinforcers_missed = 0;
-    let operando3_reinforcer_available = false;
-    let operando3_timer = 0;
-
-    let operando4_top = 50;
-    let operando4_left = 50;
-
-    let operando4_counter = 0;
-    let operando4_cumulative_recorder = []; //[counter, cumulativa, timestamp]
-    //let operando4_intervals = [10, 11, 9, 5, 8, 9];
-    let operando4_intervals_sort = [10, 11, 9, 5, 8, 9];
-    let operando4_current_interval = 0;
-    let operando4_reinforcers = 0;
-    let operando4_reinforcers_missed = 0;
-    let operando4_reinforcer_available = false;
-    let operando4_timer = 0;
-
-    // Cria inicia intervals
-    let timer_refresh_div_variables;
-
-    let timer_operando1_moviment = setInterval(moveOperando1, 1000);
-    let timer_operando2_moviment = setInterval(moveOperando2, 1000);
-    let timer_operando3_moviment = setInterval(moveOperando3, 1000);
-    let timer_operando4_moviment = setInterval(moveOperando4, 1000);
-
-    let timer_operando1_release_reinforcer;
-    let timer_operando2_release_reinforcer;
-    let timer_operando3_release_reinforcer;
-    let timer_operando4_release_reinforcer;
-    let timer_lh;
-
-		// conta milissegundos
-		let timer_operando1;
-    let timer_operando2;
-    let timer_operando3;
-    let timer_operando4;
-    let timer_change_component;
-    
-    let pause_time_left = 0;
-    let pause_time_right = 0;
-    let pause_time_left_timer;
-    let pause_time_right_timer;
-    
-    //Esquemas - timers
-    let current_time_operando1;
-    
+    let current_schedule = 0;
+    let left_onset_schedule = 1;
+    let right_onset_schedule = 1;
 
     // Cria variáveis que "representam os objetos HTML"
     let divTask = document.getElementById("divTask");
@@ -134,610 +59,534 @@
     let btnOperando3 = document.getElementById("btnOperando3");
     let btnOperando4 = document.getElementById("btnOperando4");
     let btnConsumirReforcador = document.getElementById("btnConsumirReforcador");
-    let btnChangeOver = document.getElementById("btnChangeOver");
+    let btnChangeOverLeft = document.getElementById("btnChangeOverLeft");
+    let btnChangeOverRight = document.getElementById("btnChangeOverRight");
 
-    //Multiple component
-    let mult_current_component = "L";
-    
-    // configuração do painel geral
-    divTask.style.position = "absolute";
-    divTask.style.outline = "1px solid";
-    divTask.style.top = "5%";
-    divTask.style.left = "5%";
-    divTask.style.width = "90%";
-    divTask.style.height = "90%";
+    class Schedule {
+        constructor(object) {
+            this.object_name = object;
 
-    // configuração do painel superior
-    divTop.style.position = "absolute";
-    divTop.style.outline = "1px solid";
-    divTop.style.top = "5%";
-    divTop.style.left = "5%";
-    divTop.style.width = "90%";
-    divTop.style.height = "10%";
+            if (this.object_name === 'btnOperando1') this.intervals = [ 5, 7, 8, 4];
+            if (this.object_name === 'btnOperando2') this.intervals = [ 7, 4, 5, 8];
+            if (this.object_name === 'btnOperando3') this.intervals = [ 3, 4, 6, 7];
+            if (this.object_name === 'btnOperando4') this.intervals = [ 8, 7, 5, 6];
 
-    // configuração do painel de reforço
-    divReforco.style.position = "absolute";
-    divReforco.style.outline = "1px solid";
-    divReforco.style.top = "25%";
-    divReforco.style.left = "37%";
-    divReforco.style.width = "25%";
-    divReforco.style.height = "25%";
-    divReforco.style.display = "none";
-    divReforco.style.textAlign = "center";
+            this.current_interval = [];
 
-    // configuração do painel esquerdo
-    divLeft.style.position = "absolute";
-    divLeft.style.outline = "1px solid";
-    divLeft.style.top = "20%";
-    divLeft.style.left = "5%";
-    divLeft.style.width = "43%";
-    divLeft.style.height = "75%";
+            this.label = '';
+            this.clock = 0;
+            this.clock_paused = false;
 
-    // configuração do painel direito
-    divRight.style.position = "absolute";
-    divRight.style.outline = "1px solid";
-    divRight.style.top = "20%";
-    divRight.style.left = "50%";
-    divRight.style.width = "45%";
-    divRight.style.height = "75%";
-
-    // configuração do painel de variáveis
-    divVariables.style.position = "absolute";
-    divVariables.style.outline = "1px solid";
-    divVariables.style.top = "5%";
-    divVariables.style.left = "5%";
-    divVariables.style.width = "25%";
-    divVariables.style.height = "90%";
-    divVariables.style.display = "none";
-
-    // configuração do Operando 1
-    btnOperando1.style.position = "absolute";
-    btnOperando1.style.background='red';
-    btnOperando1.style.top = operando1_top + "%";
-    btnOperando1.style.left = operando1_left + "%";
-    btnOperando1.style.width = "10%";
-    btnOperando1.style.height = "10%";
-
-    // configuração do Operando 2
-    btnOperando2.style.position = "absolute";
-    btnOperando2.style.background='yellow';
-    btnOperando2.style.top = operando2_top + "%";
-    btnOperando2.style.left = operando2_left + "%";
-    btnOperando2.style.width = "10%";
-    btnOperando2.style.height = "10%";
-
-    // configuração do Operando 3
-    btnOperando3.style.position = "absolute";
-    btnOperando3.style.background='blue';
-    btnOperando3.style.top = operando3_top + "%";
-    btnOperando3.style.left = "10%";
-    btnOperando3.style.width = "10%";
-    btnOperando3.style.height = "10%";
-
-    // configuração do Operando 4
-    btnOperando4.style.position = "absolute";
-    btnOperando4.style.background='green';
-    btnOperando4.style.top = operando4_top + "%";
-    btnOperando4.style.left = "80%";
-    btnOperando4.style.width = "10%";
-    btnOperando4.style.height = "10%";
-
-    // configuração do Botão de consumo
-    btnConsumirReforcador.style.position = "absolute";
-    btnConsumirReforcador.style.background='white';
-    btnConsumirReforcador.style.top = "10%";
-    btnConsumirReforcador.style.left = "45%";
-    btnConsumirReforcador.style.width = "10%";
-    btnConsumirReforcador.style.height = "70%";
-    btnConsumirReforcador.disabled = true;
-    
-
-    // configuração do Botão de ChangeOver left
-    btnChangeOverLeft.style.position = "absolute";
-    btnChangeOverLeft.style.background='gray';
-    btnChangeOverLeft.style.fontSize = "large";
-    btnChangeOverLeft.style.top = "5%";
-    btnChangeOverLeft.style.left = "15%";
-    btnChangeOverLeft.style.width = "15%";
-    btnChangeOverLeft.style.height = "75%";
-    btnChangeOverLeft.style.display = "block";
-    
-    // configuração do Botão de ChangeOver right
-    btnChangeOverRight.style.position = "absolute";
-    btnChangeOverRight.style.background='gray';
-    btnChangeOverRight.style.fontSize = "large";
-    btnChangeOverRight.style.top = "5%";
-    btnChangeOverRight.style.left = "65%";
-    btnChangeOverRight.style.width = "15%";
-    btnChangeOverRight.style.height = "75%";
-    btnChangeOverRight.style.display = "none";
-    
-
-    // cria objeto na tela - para usar no lugar de alert
-    // let t = document.createTextNode("* OK * ");
-    // document.body.appendChild(t);
-
-    // Inicia timers depois que a página é completamente carregada
-    document.addEventListener("DOMContentLoaded", startIntervalOperando1);
-    document.addEventListener("DOMContentLoaded", startIntervalOperando2);
-    document.addEventListener("DOMContentLoaded", startIntervalOperando3);
-    document.addEventListener("DOMContentLoaded", startIntervalOperando4);
-    
-    //Component
-    document.addEventListener("DOMContentLoaded", startIntervalChangeComponent);
-
-		// Contole do múltiplo
-		function startIntervalChangeComponent() {
-    	timer_change_component = setInterval(change_component, 3000);
-    }
-    
-    function change_component() {
-    	if (mult_current_component === "L") {
-      	mult_current_component = "R";
-        startRigthComponent();
-        
-        //Para o relógio esquema 1
-        clearInterval(timer_operando1);
-        clearInterval(timer_operando1_release_reinforcer);
-        clearInterval(pause_time_left_timer);
-        
-        //Para o relógio esquema 2
-        //clearInterval(timer_operando1);
-        //clearInterval(timer_operando1_release_reinforcer);
-                   
-        //parar cronometros esquerdo;
-        
-        
-      } else {
-  
-   			timer_operando1 = setInterval(timer_operando1_counter, 1000);
-        operando1_timer = pause_time_left * 1000;
-        
-        
-     
-  			let new_interval = operando1_current_interval - pause_time_left;
-  			        timer_operando1_release_reinforcer = setTimeout(releaseReinforcerOperando1, operando1_current_interval * 1000);
-  			 
-        
-      	mult_current_component = "L";
-        startLeftComponent()
-      }
-    }
-    
-    function startLeftComponent() {
-    	btnChangeOverRight.style.display = "none";
-      btnChangeOverLeft.style.display = "block";
-    }
-    
-    function startRigthComponent() {
-    	btnChangeOverRight.style.display = "block";
-      btnChangeOverLeft.style.display = "none";
-    }
-   
-    
-    
-		// Timer - esquemas
-    function timer_operando1_counter() {
-      operando1_timer -= 1000;
-    }
-    
-    function startIntervalOperando1() {
-        
-        operando1_current_interval = getNextIntervalForOperando1();
-
-        operando1_timer = operando1_current_interval * 1000;
-				timer_operando1 = setInterval(timer_operando1_counter, 1000);
-        
-        
-        clearInterval(pause_time_left_timer);
-        pause_time_left_timer = setInterval(
-        	function(){ 
-          	pause_time_left = pause_time_left + 1; }
-           , 1000);
-
-        
-        
-        timer_operando1_release_reinforcer = setTimeout(releaseReinforcerOperando1, operando1_current_interval * 1000);
-        
-        divReforco.style.display = "none";
-        divTop.style.display = "block";
-        divLeft.style.display = "block";
-        divRight.style.display = "block";
-    }
-
-    function releaseReinforcerOperando1() {
-        operando1_reinforcer_available = true;
-    }
-    
-    
-    function timer_operando2_counter() {
-      operando2_timer -= 1000;
-    }
-
-    function startIntervalOperando2() {
-        operando2_current_interval = getNextIntervalForOperando2();
-        operando2_timer = operando2_current_interval * 1000;
-				timer_operando2 = setInterval(timer_operando2_counter, 1000);
-        timer_operando2_release_reinforcer = setTimeout(releaseReinforcerOperando2, operando2_current_interval * 1000);
-        divReforco.style.display = "none";
-        divTop.style.display = "block";
-        divLeft.style.display = "block";
-        divRight.style.display = "block";
-    }
-
-    function releaseReinforcerOperando2() {
-        operando2_reinforcer_available = true;
-    }
+            this.time = 0;
+            this.time_unit = 100;
 
 
-    function timer_operando3_counter() {
-      operando3_timer -= 1000;
-    }
-    function startIntervalOperando3() {
-        operando3_current_interval = getNextIntervalForOperando3();
-        operando3_timer = operando3_current_interval * 1000;
-				timer_operando3 = setInterval(timer_operando3_counter, 1000);
-        timer_operando3_release_reinforcer = setTimeout(releaseReinforcerOperando3, operando3_current_interval * 1000);
-        divReforco.style.display = "none";
-        divTop.style.display = "block";
-        divLeft.style.display = "block";
-        divRight.style.display = "block";
-    }
+            this.responses = 0;
+            this.reinforcers = 0;
+            this.reinforcers_missed = 0;
 
-    function releaseReinforcerOperando3() {
-        operando3_reinforcer_available = true;
-    }
-
-
-    function timer_operando4_counter() {
-      operando4_timer -= 1000;
-     }
-    function startIntervalOperando4() {
-        operando4_current_interval = getNextIntervalForOperando4();
-        operando4_timer = operando4_current_interval * 1000;
-				timer_operando4 = setInterval(timer_operando4_counter, 1000);
-        timer_operando4_release_reinforcer = setTimeout(releaseReinforcerOperando4, operando4_current_interval * 1000);
-        divReforco.style.display = "none";
-        divTop.style.display = "block";
-        divLeft.style.display = "block";
-        divRight.style.display = "block";
-    }
-
-    function releaseReinforcerOperando4() {
-        operando4_reinforcer_available = true;
-    }
-
-    //Respostas
-    function onClickOperando1() {
-        btnOperando1.style.background='#ffcccc';
-        setTimeout(function(){ btnOperando1.style.background='red'; }, 100);
-
-        operando1_counter += 1;
-        if (operando1_reinforcer_available === true) {
-            current_reinforcer = 1;
-            operando1_reinforcer_available = false;
-            btnConsumirReforcador.disabled = false;
-            startLH();
-            document.getElementById("divLeft").style.display = 'none';
-            document.getElementById("divRight").style.display = 'none';
+            this.reinforcer_status = false; // unavailable
+            this.object = document.getElementById(object);
+            this.background_color = this.object.style.backgroundColor;
         }
-     }
+
+        start() {
+            this.startClock();
+        }
+
+        setLabel (label) {
+            this.label = label;
+        }
+
+        startClock() {
+            this.time = 0;
+            this.reinforcer_status = false;
+            this.setCurrentInterval();
+            this.clock = setInterval(() => this.addTime(), this.time_unit);
+        }
+
+        stopClock() {
+            clearInterval(this.clock);
+        }
+
+        pauseClock() {
+            this.clock_paused = true;
+        }
+
+        resumeClock() {
+            this.clock_paused = false;
+        }
+
+        addTime() {
+            if (!this.clock_paused) {
+                this.time += 100;
+            }
+            if (this.time >= (this.current_interval * 1000)) this.reinforcer_status = true;
+        }
+
+        getTime() {
+            return this.time / this.time_unit;
+        }
+
+        addResponse() {
+            this.responses += 1;
+        }
+
+        getResponses() {
+            return this.responses;
+        }
+
+        addReinforcer() {
+            this.reinforcers += 1;
+        }
+
+        addReinforcerMissed() {
+            this.reinforcers_missed += 1;
+        }
+
+        showFeedbackColor() {
+            this.object.style.background = 'gray';
+            setTimeout(() => this.hideFeedbackColor(), 100);
+        }
+
+        hideFeedbackColor() {
+            this.object.style.background = this.background_color;
+        }
+
+        getReinforcerStatus() {
+            return this.reinforcer_status;
+        }
+
+        setCurrentInterval () {
+            let interval = 0;
+            let array_size = this.intervals.length;
+            let index = 0;
+
+            index = Math.floor((Math.random() * array_size) + 1);
+            index = index - 1;
+            interval = this.intervals[index];
+            this.intervals.splice(index, 1); // remove item da array
+            this.current_interval = interval;
+
+            if (this.intervals.length === 0) {
+                if (this.object_name === 'btnOperando1') this.intervals = [ 5, 7, 8, 4];
+                if (this.object_name === 'btnOperando2') this.intervals = [ 7, 4, 5, 8];
+                if (this.object_name === 'btnOperando3') this.intervals = [ 3, 4, 6, 7];
+                if (this.object_name === 'btnOperando4') this.intervals = [ 8, 7, 5, 6];
+            }
+        }
+
+        getVariables() {
+            let variables = [];
+            variables.push(this.label);
+            variables.push("--------------");
+            variables.push("Clock: " + this.getTime());
+            variables.push("Responses: " + this.getResponses());
+            variables.push("Reinforcers: " + this.reinforcers);
+            variables.push("Reinforcers missed: " + this.reinforcers_missed);
+            variables.push("Reinforcer Status: " + this.reinforcer_status);
+            variables.push("Current interval: " + this.current_interval);
+            variables.push("Intervals: " + this.intervals);
+            variables.push("<br>");
+
+            variables = variables.join("<br>");
+            return variables;
+        }
+    }
+
+    class Reinforcer {
+        constructor() {
+            this.reinforcer_lh = 0;
+        }
+
+        showKey() {
+            btnConsumirReforcador.style.display = "block";
+            divLeft.style.display = "none";
+            divRight.style.display = "none";
+            component.pauseClock();
+            this.reinforcer_lh = setInterval(() => this.endLH(), 2000);
+        }
+
+        endLH() {
+            clearInterval(this.reinforcer_lh);
+            this.hideKey();
+            if (current_schedule === 1) schedule_1.addReinforcerMissed();
+            if (current_schedule === 2) schedule_2.addReinforcerMissed();
+            if (current_schedule === 3) schedule_3.addReinforcerMissed();
+            if (current_schedule === 4) schedule_4.addReinforcerMissed();
+            resumeScheduleAfterReinforcement();
+        }
+
+        hideKey() {
+            btnConsumirReforcador.style.display = "none";
+            if (current_schedule === 1 || current_schedule === 2) divLeft.style.display = "block";
+            if (current_schedule === 3 || current_schedule === 4) divRight.style.display = "block";
+        }
+
+        showReinforcer() {
+            clearInterval(this.reinforcer_lh);
+            btnConsumirReforcador.style.display = "none";
+            divTop.style.display = "none";
+            divReforco.style.display = "block";
+            setTimeout(() => this.hideReinforcer(), 2000);
+        }
+
+        hideReinforcer() {
+            divReforco.style.display = "none";
+            divTop.style.display = "block";
+
+            if (current_schedule === 1 || current_schedule === 2) divLeft.style.display = "block";
+            if (current_schedule === 3 || current_schedule === 4) divRight.style.display = "block";
+            resumeScheduleAfterReinforcement();
+        }
+
+    }
+
+    class ComponentControler {
+        constructor() {
+            this.current_componet =  Math.floor((Math.random() * 2) + 1);
+            this.current_interval = 0;
+            this.component_clock = 0;
+            this.clock_paused = false;
+            this.clock_time = 0;
+            this.intervals = [3, 4, 3, 3, 4, 2, 3, 3];
+        }
+
+        start() {
+            this.current_interval = 5;
+            this.changeComponent();
+            this.component_clock = setInterval(() => this.addClockTime(), 100);
+        }
+
+        addClockTime() {
+            if (!this.clock_paused) this.clock_time += 100;
+            if (this.clock_time >= this.current_interval * 1000) {
+                this.clock_time = 0;
+                this.changeComponent()
+            }
+        }
+
+        pauseClock() {
+            this.clock_paused = true;
+        }
+
+        resumeClock() {
+            this.clock_paused = false;
+        }
+
+        changeComponent() {
+            if (this.current_componet === 1) {
+                this.current_componet = 2;
+                btnChangeOverRight.style.display = "block";
+                btnChangeOverLeft.style.display = "none";
+                divRight.style.display = 'block';
+                divLeft.style.display = 'none';
+
+                schedule_1.pauseClock();
+                schedule_2.pauseClock();
+                schedule_3.resumeClock();
+                schedule_4.resumeClock();
+
+            } else {
+                this.current_componet = 1;
+                btnChangeOverRight.style.display = "none";
+                btnChangeOverLeft.style.display = "block";
+                divRight.style.display = 'none';
+                divLeft.style.display = 'block';
+
+                schedule_1.resumeClock();
+                schedule_2.resumeClock();
+                schedule_3.pauseClock();
+                schedule_4.pauseClock();
+            }
+
+        }
+    }
+    class Dashboard {
+        constructor() {
+            this.object = document.getElementById("divVariables");
+            this.output = [];
+            this.output.push('aaa');
+
+            this.interval = 0;
+            this.refresh_interval = 100;
+        }
+
+        toggle() {
+            if (this.object.style.display === '') this.object.style.display = 'none';
+
+            if (this.object.style.display === "none") {
+                this.object.style.display = "block";
+                divTask.style.left = "30%";
+                divTask.style.width = "65%";
+            } else {
+                this.object.style.display = "none";
+                divTask.style.left = "5%";
+                divTask.style.width = "90%";
+            }
+        }
+
+        print () {
+            let html = [];
+            html.push(schedule_1.getVariables());
+            html.push(schedule_2.getVariables());
+            html.push(schedule_3.getVariables());
+            html.push(schedule_4.getVariables());
+            this.object.innerHTML = html.join("<br>");
+        }
+
+        startRefresh() {
+            this.interval = setInterval(() => this.print(), 100);
+        }
+    }
+
+    function setElementsStyle() {
+        // configuração do painel geral
+        divTask.style.position = "absolute";
+        divTask.style.outline = "1px solid";
+        divTask.style.top = "5%";
+        divTask.style.left = "5%";
+        divTask.style.width = "90%";
+        divTask.style.height = "90%";
+
+        // configuração do painel superior
+        divTop.style.position = "absolute";
+        divTop.style.outline = "1px solid";
+        divTop.style.top = "5%";
+        divTop.style.left = "5%";
+        divTop.style.width = "90%";
+        divTop.style.height = "10%";
+
+        // configuração do painel de reforço
+        divReforco.style.position = "absolute";
+        divReforco.style.outline = "1px solid";
+        divReforco.style.top = "25%";
+        divReforco.style.left = "37%";
+        divReforco.style.width = "25%";
+        divReforco.style.height = "25%";
+        divReforco.style.display = "none";
+        divReforco.style.textAlign = "center";
+
+        // configuração do painel esquerdo
+        divLeft.style.position = "absolute";
+        divLeft.style.outline = "1px solid";
+        divLeft.style.top = "20%";
+        divLeft.style.left = "5%";
+        divLeft.style.width = "43%";
+        divLeft.style.height = "75%";
+
+        // configuração do painel direito
+        divRight.style.position = "absolute";
+        divRight.style.outline = "1px solid";
+        divRight.style.top = "20%";
+        divRight.style.left = "50%";
+        divRight.style.width = "45%";
+        divRight.style.height = "75%";
+
+        // configuração do painel de variáveis
+        divVariables.style.position = "absolute";
+        divVariables.style.outline = "1px solid";
+        divVariables.style.top = "5%";
+        divVariables.style.left = "5%";
+        divVariables.style.width = "25%";
+        divVariables.style.height = "90%";
+        divVariables.style.display = "none";
+
+        // configuração do Operando 1
+        btnOperando1.style.position = "absolute";
+
+        btnOperando1.style.background='red';
+        btnOperando1.style.top = "50%";
+        btnOperando1.style.left = "50%";
+        btnOperando1.style.width = "10%";
+        btnOperando1.style.height = "10%";
+
+        // configuração do Operando 2
+        btnOperando2.style.position = "absolute";
+        btnOperando2.style.background='yellow';
+        btnOperando2.style.top = "50%";
+        btnOperando2.style.left = "40%";
+        btnOperando2.style.width = "10%";
+        btnOperando2.style.height = "10%";
+
+        // configuração do Operando 3
+        btnOperando3.style.position = "absolute";
+        btnOperando3.style.background='blue';
+        btnOperando3.style.top = "50%";
+        btnOperando3.style.left = "50%";
+        btnOperando3.style.width = "10%";
+        btnOperando3.style.height = "10%";
+
+        // configuração do Operando 4
+        btnOperando4.style.position = "absolute";
+        btnOperando4.style.background='green';
+        btnOperando4.style.top = "50%";
+        btnOperando4.style.left = "40%";
+        btnOperando4.style.width = "10%";
+        btnOperando4.style.height = "10%";
+
+        // configuração do Botão de consumo
+        btnConsumirReforcador.style.position = "absolute";
+        btnConsumirReforcador.style.background='white';
+        btnConsumirReforcador.style.top = "10%";
+        btnConsumirReforcador.style.left = "45%";
+        btnConsumirReforcador.style.width = "10%";
+        btnConsumirReforcador.style.height = "70%";
+        btnConsumirReforcador.style.display = "none";
+
+        btnChangeOverLeft.style.position = "absolute";
+        btnChangeOverLeft.style.background='white';
+        btnChangeOverLeft.style.top = "10%";
+        btnChangeOverLeft.style.left = "15%";
+        btnChangeOverLeft.style.width = "10%";
+        btnChangeOverLeft.style.height = "70%";
+        btnChangeOverLeft.style.display = "block";
+
+        btnChangeOverRight.style.position = "absolute";
+        btnChangeOverRight.style.background='white';
+        btnChangeOverRight.style.top = "10%";
+        btnChangeOverRight.style.left = "75%";
+        btnChangeOverRight.style.width = "10%";
+        btnChangeOverRight.style.height = "70%";
+        btnChangeOverRight.style.display = "block";
+    }
+
+    document.addEventListener("DOMContentLoaded", onDocumentReady);
+    function onDocumentReady() {
+        setElementsStyle();
+
+        let rnd_number_1 = Math.floor((Math.random() * 2) + 1);
+        let rnd_number_2 = Math.floor((Math.random() * 2) + 1);
+
+        if (rnd_number_1 === 1) {
+            right_onset_schedule = 1;
+            btnOperando3.style.display = 'block';
+            btnOperando4.style.display = 'none';
+        } else {
+            right_onset_schedule = 2;
+            btnOperando3.style.display = 'none';
+            btnOperando4.style.display = 'block';
+        }
+
+        if (rnd_number_2 === 1) {
+            left_onset_schedule = 1;
+            btnOperando1.style.display = 'block';
+            btnOperando2.style.display = 'none';
+        } else {
+            left_onset_schedule = 2;
+            btnOperando1.style.display = 'none';
+            btnOperando2.style.display = 'block';
+        }
+
+        schedule_1 = new Schedule("btnOperando1");
+        schedule_1.setLabel("Schedule 1");
+        schedule_1.start();
+
+        schedule_2 = new Schedule("btnOperando2");
+        schedule_2.setLabel("Schedule 2");
+        schedule_2.start();
+
+        schedule_3 = new Schedule("btnOperando3");
+        schedule_3.setLabel("Schedule 3");
+        schedule_3.start();
+
+        schedule_4 = new Schedule("btnOperando4");
+        schedule_4.setLabel("Schedule 4");
+        schedule_4.start();
+
+        db = new Dashboard();
+        db.startRefresh();
+
+        component = new ComponentControler();
+        component.start();
+
+        reinforcer_control = new Reinforcer();
+    }
+
+    function onClickOperando1() {
+        current_schedule = 1;
+        schedule_1.addResponse();
+        schedule_1.showFeedbackColor();
+        if (schedule_1.getReinforcerStatus()) {
+            schedule_1.stopClock();
+            reinforcer_control.showKey();
+        }
+    }
 
     function onClickOperando2() {
-       btnOperando2.style.background='#ffcccc';
-       setTimeout(function(){ btnOperando2.style.background='yellow'; }, 100);
-
-       operando2_counter += 1;
-       if (operando2_reinforcer_available === true) {
-           current_reinforcer = 2;
-           operando2_reinforcer_available = false;
-           btnConsumirReforcador.disabled = false;
-           startLH();
-           document.getElementById("divLeft").style.display = 'none';
-           document.getElementById("divRight").style.display = 'none';
+        current_schedule = 2;
+        schedule_2.addResponse();
+        schedule_2.showFeedbackColor();
+        if (schedule_2.getReinforcerStatus()) {
+            schedule_2.stopClock();
+            reinforcer_control.showKey();
         }
     }
-  
-    function onClickOperando3() {
-      btnOperando3.style.background='#ffcccc';
-      setTimeout(function(){ btnOperando3.style.background='blue'; }, 100);
 
-      operando3_counter += 1;
-      if (operando3_reinforcer_available === true) {
-         current_reinforcer = 3;
-         operando3_reinforcer_available = false;
-         btnConsumirReforcador.disabled = false;
-         startLH();
-         document.getElementById("divLeft").style.display = 'none';
-         document.getElementById("divRight").style.display = 'none';
-     }
-   }
+    function onClickOperando3() {
+        current_schedule = 3;
+        schedule_3.addResponse();
+        schedule_3.showFeedbackColor();
+        if (schedule_3.getReinforcerStatus()) {
+            schedule_3.stopClock();
+            reinforcer_control.showKey();
+        }
+    }
 
     function onClickOperando4() {
-     btnOperando4.style.background='#ffcccc';
-     setTimeout(function(){ btnOperando4.style.background='green'; }, 100);
-
-     operando4_counter += 1;
-     if (operando4_reinforcer_available === true) {
-         current_reinforcer = 4;
-         operando4_reinforcer_available = false;
-         btnConsumirReforcador.disabled = false;
-         startLH();
-         document.getElementById("divLeft").style.display = 'none';
-         document.getElementById("divRight").style.display = 'none';
-   }
- }
-    // LH
-    function startLH() {
-        timer_lh = setTimeout(removeReinforcer, 3000);
+        current_schedule = 4;
+        schedule_4.addResponse();
+        schedule_4.showFeedbackColor();
+        if (schedule_4.getReinforcerStatus()) {
+            schedule_4.stopClock();
+            reinforcer_control.showKey();
+        }
     }
 
-    function removeReinforcer() {
-        btnConsumirReforcador.disabled = true;
-
-        if (current_reinforcer === 1) {
-            startIntervalOperando1();
-            operando1_reinforcers_missed += 1;
-        }
-        if (current_reinforcer === 2) {
-          startIntervalOperando2();
-          operando2_reinforcers_missed += 1;
-        }
-        if (current_reinforcer === 3) {
-          startIntervalOperando3();
-          operando3_reinforcers_missed += 1;
-        }
-        if (current_reinforcer === 4) {
-          startIntervalOperando4();
-          operando4_reinforcers_missed += 1;
-        }
-    
+    function onClickConsumatoryButton() {
+        if (current_schedule === 1) schedule_1.addReinforcer();
+        if (current_schedule === 2) schedule_2.addReinforcer();
+        if (current_schedule === 3) schedule_3.addReinforcer();
+        if (current_schedule === 4) schedule_4.addReinforcer();
+        reinforcer_control.showReinforcer();
     }
 
-    function presentReinforcer() {
-        clearInterval(timer_lh);
-        divReforco.style.display = "block";
-        divTop.style.display = "none";
-        divLeft.style.display = "none";
-        divRight.style.display = "none";
-        btnConsumirReforcador.disabled = true;
-        
 
-        if (current_reinforcer === 1) {
-            operando1_reinforcers = operando1_reinforcers + 1;
-            setTimeout(startIntervalOperando1, 2000);
-        }
-        if (current_reinforcer === 2) {
-          operando2_reinforcers = operando2_reinforcers + 1;
-          setTimeout(startIntervalOperando2, 2000);
-        }
-        if (current_reinforcer === 3) {
-          operando3_reinforcers = operando3_reinforcers + 1;
-          setTimeout(startIntervalOperando3, 2000);
-        }
-        if (current_reinforcer === 4) {
-          operando4_reinforcers = operando4_reinforcers + 1;
-          setTimeout(startIntervalOperando4, 2000);
-        }
-
-    }
-
-    //Movimentação dos operandos
-    function moveOperando1() {
-        let step_h = Math.floor(Math.random() * 2) + 1;
-        let step_v = Math.floor(Math.random() * 2) + 1;
-
-        if (step_h === 1) operando1_top = operando1_top + 5;
-        if (step_h === 2) operando1_top = operando1_top - 5;
-
-        if (step_v === 1) operando1_left = operando1_left + 5;
-        if (step_v === 2) operando1_left = operando1_left - 5;
-
-        if (operando1_top <= 10) operando1_top = operando1_top + 5;
-        if (operando1_top >= 90) operando1_top = operando1_top - 5;
-
-        if (operando1_left <= 10) operando1_left = operando1_left + 5;
-        if (operando1_left >= 90) operando1_left = operando1_left - 5;
-
-        btnOperando1.style.top = operando1_top + "%";
-        btnOperando1.style.left = operando1_left + "%";
-    }
-
-    function moveOperando2() {
-        let step_h = Math.floor(Math.random() * 2) + 1;
-        let step_v = Math.floor(Math.random() * 2) + 1;
-
-        if (step_h === 1) operando2_top = operando2_top + 5;
-        if (step_h === 2) operando2_top = operando2_top - 5;
-
-        if (step_v === 1) operando2_left = operando2_left + 5;
-        if (step_v === 2) operando2_left = operando2_left - 5;
-
-        if (operando2_top <= 10) operando2_top = operando2_top + 5;
-        if (operando2_top >= 90) operando2_top = operando2_top - 5;
-
-        if (operando2_left <= 10) operando2_left = operando2_left + 5;
-        if (operando2_left >= 90) operando2_left = operando2_left - 5;
-
-        btnOperando2.style.top = operando2_top + "%";
-        btnOperando2.style.left = operando2_left + "%";
-    }
-
-    function moveOperando3() {
-        let step_h = Math.floor(Math.random() * 2) + 1;
-        let step_v = Math.floor(Math.random() * 2) + 1;
-
-        if (step_h === 1) operando3_top = operando3_top + 5;
-        if (step_h === 2) operando3_top = operando3_top - 5;
-
-        if (step_v === 1) operando3_left = operando3_left + 5;
-        if (step_v === 2) operando3_left = operando3_left - 5;
-
-        if (operando3_top <= 10) operando3_top = operando3_top + 5;
-        if (operando3_top >= 90) operando3_top = operando3_top - 5;
-
-        if (operando3_left <= 10) operando3_left = operando3_left + 5;
-        if (operando3_left >= 90) operando3_left = operando3_left - 5;
-
-        btnOperando3.style.top = operando3_top + "%";
-        btnOperando3.style.left = operando3_left + "%";
-    }
-
-    function moveOperando4() {
-        let step_h = Math.floor(Math.random() * 2) + 1;
-        let step_v = Math.floor(Math.random() * 2) + 1;
-
-        if (step_h === 1) operando4_top = operando4_top + 5;
-        if (step_h === 2) operando4_top = operando4_top - 5;
-
-        if (step_v === 1) operando4_left = operando4_left + 5;
-        if (step_v === 2) operando4_left = operando4_left - 5;
-
-        if (operando4_top <= 10) operando4_top = operando4_top + 5;
-        if (operando4_top >= 90) operando4_top = operando4_top - 5;
-
-        if (operando4_left <= 10) operando4_left = operando4_left + 5;
-        if (operando4_left >= 90) operando4_left = operando4_left - 5;
-
-        btnOperando4.style.top = operando4_top + "%";
-        btnOperando4.style.left = operando4_left + "%";
-    }
-
-    function toogleDivVariables() {
-        if (divVariables.style.display === "none") {
-            divVariables.style.display = "block";
-            divTask.style.left = "30%";
-            divTask.style.width = "65%";
-            timer_refresh_div_variables = setInterval(refreshDivVariables, 1000);
+    function onClickBtnChangeOverRight() {
+        if (right_onset_schedule === 1) {
+            right_onset_schedule = 2;
+            btnOperando3.style.display = 'none';
+            btnOperando4.style.display = 'block';
         } else {
-            divVariables.style.display = "none";
-            divTask.style.left = "5%";
-            divTask.style.width = "90%";
-            clearInterval(timer_refresh_div_variables);
+            right_onset_schedule = 1;
+            btnOperando3.style.display = 'block';
+            btnOperando4.style.display = 'none';
         }
     }
 
-    function refreshDivVariables() {
-        let text = '';
-        text = text + "operando1_counter: " + operando1_counter + "<br>";
-        text = text + "operando1_timer: " + operando1_timer + "<br>";
-        text = text + "pause_time_left: " + pause_time_left + "<br>";
-      
-        text = text + "operando1_reinforcers: " + operando1_reinforcers + "<br>";
-        text = text + "operando1_reinforcers_missed: " + operando1_reinforcers_missed + "<br>";
-        text = text + "operando1_current_interval: " + operando1_current_interval + "<br>";
-        text = text + "operando1_cumulative_recorder: " + operando1_cumulative_recorder + "<br>";
-        //text = text + "operando1_intervals: " + operando1_intervals + "<br>";
-        text = text + "operando1_intervals_sort: " + operando1_intervals_sort + "<br>";
-        text = text + "operando1_reinforcer_available: " + operando1_reinforcer_available + "<br>";
-       
-        text = text + "operando2_counter: " + operando2_counter + "<br>";
-        text = text + "operando2_timer: " + operando2_timer + "<br>";
-        
-        text = text + "operando2_reinforcers: " + operando2_reinforcers + "<br>";
-        text = text + "operando2_reinforcers_missed: " + operando2_reinforcers_missed + "<br>";
-        text = text + "operando2_current_interval: " + operando2_current_interval + "<br>";
-        text = text + "operando2_cumulative_recorder: " + operando2_cumulative_recorder + "<br>";
-        //text = text + "operando2_intervals: " + operando2_intervals + "<br>";
-        text = text + "operando2_intervals_sort: " + operando2_intervals_sort + "<br>";
-        text = text + "operando2_reinforcer_available: " + operando2_reinforcer_available + "<br>";
-
-        text = text + "operando3_counter: " + operando3_counter + "<br>";
-        text = text + "operando3_timer: " + operando3_timer + "<br>";
-        
-        text = text + "operando3_reinforcers: " + operando3_reinforcers + "<br>";
-        text = text + "operando3_reinforcers_missed: " + operando3_reinforcers_missed + "<br>";
-        text = text + "operando3_current_interval: " + operando3_current_interval + "<br>";
-        text = text + "operando3_cumulative_recorder: " + operando3_cumulative_recorder + "<br>";
-        //text = text + "operando3_intervals: " + operando3_intervals + "<br>";
-        text = text + "operando3_intervals_sort: " + operando3_intervals_sort + "<br>";
-        text = text + "operando3_reinforcer_available: " + operando3_reinforcer_available + "<br>";
-
-        text = text + "operando4_counter: " + operando4_counter + "<br>";
-        text = text + "operando4_timer: " + operando4_timer + "<br>";
-        
-        text = text + "operando4_reinforcers: " + operando4_reinforcers + "<br>";
-        text = text + "operando4_reinforcers_missed: " + operando4_reinforcers_missed + "<br>";
-        text = text + "operando4_current_interval: " + operando4_current_interval + "<br>";
-        text = text + "operando4_cumulative_recorder: " + operando4_cumulative_recorder + "<br>";
-        //text = text + "operando4_intervals: " + operando4_intervals + "<br>";
-        text = text + "operando4_intervals_sort: " + operando4_intervals_sort + "<br>";
-        text = text + "operando4_reinforcer_available: " + operando4_reinforcer_available + "<br>";
-
-
-        divVariables.innerHTML = text;
-    }
-
-    function getNextIntervalForOperando1() {
-        let interval = 0;
-        let array_size = operando1_intervals_sort.length;
-        let index = 0;
-
-        if (array_size === 0) {
-            	operando1_intervals_sort = [10, 11, 9, 5, 8, 9, 7];
+    function onClickBtnChangeOverLeft() {
+        if (left_onset_schedule === 1) {
+            left_onset_schedule = 2;
+            btnOperando1.style.display = 'none';
+            btnOperando2.style.display = 'block';
+        } else {
+            left_onset_schedule = 1;
+            btnOperando1.style.display = 'block';
+            btnOperando2.style.display = 'none';
         }
-
-        index = Math.floor((Math.random() * array_size) + 1);
-        index = index - 1;
-        // let t = document.createTextNode(index + " ");
-        // document.body.appendChild(t);
-        interval = operando1_intervals_sort[index];
-        operando1_intervals_sort.splice(index, 1); // remove item da array
-        return interval;
-      }
-
-    function getNextIntervalForOperando2() {
-      let interval = 0;
-      let array_size = operando2_intervals_sort.length;
-      let index = 0;
-
-      if (array_size === 0) {
-          operando2_intervals_sort = [10, 11, 9, 5, 8, 9];
-      }
-
-      index = Math.floor((Math.random() * array_size) + 1);
-      index = index - 1;
-      // let t = document.createTextNode(index + " ");
-      // document.body.appendChild(t);
-      interval = operando2_intervals_sort[index];
-      operando2_intervals_sort.splice(index, 1); // remove item da array
-      return interval;
     }
 
-    function getNextIntervalForOperando3() {
-      let interval = 0;
-      let array_size = operando3_intervals_sort.length;
-      let index = 0;
 
-      if (array_size === 0) {
-          operando3_intervals_sort = [10, 11, 9, 5, 8, 9];
-      }
+    function resumeScheduleAfterReinforcement() {
+        if (current_schedule === 1) schedule_1.startClock();
+        if (current_schedule === 2) schedule_2.startClock();
+        if (current_schedule === 3) schedule_3.startClock();
+        if (current_schedule === 4) schedule_4.startClock();
 
-      index = Math.floor((Math.random() * array_size) + 1);
-      index = index - 1;
-      // let t = document.createTextNode(index + " ");
-      // document.body.appendChild(t);
-      interval = operando3_intervals_sort[index];
-      operando3_intervals_sort.splice(index, 1); // remove item da array
-      return interval;
-   }
-
-  function getNextIntervalForOperando4() {
-    let interval = 0;
-    let array_size = operando4_intervals_sort.length;
-    let index = 0;
-
-    if (array_size === 0) {
-        operando4_intervals_sort = [10, 11, 9, 5, 8, 9];
+        component.resumeClock();
     }
 
-    index = Math.floor((Math.random() * array_size) + 1);
-    index = index - 1;
-    // let t = document.createTextNode(index + " ");
-    // document.body.appendChild(t);
-    interval = operando4_intervals_sort[index];
-    operando4_intervals_sort.splice(index, 1); // remove item da array
-    return interval;
-   }
-	
+    function toggleDivVariables() {
+        db.toggle();
+    }
 </script>
